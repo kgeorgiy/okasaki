@@ -1,4 +1,4 @@
-{- Excercise 2.1 -}
+{- Exercise 2.1 -}
 suffixes = foldr (\x ss -> (x : head ss) : ss) [[]]
 
 suffixes' [] = [[]]
