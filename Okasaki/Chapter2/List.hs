@@ -1,3 +1,5 @@
+module Okasaki.Chapter2.List where
+
 {- Exercise 2.1 -}
 suffixes = foldr (\x ss -> (x : head ss) : ss) [[]]
 
