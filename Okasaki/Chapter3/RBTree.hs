@@ -1,0 +1,95 @@
+module Okasaki.Chapter3.RBTree(RBTree, checkList) where
+
+import Data.List hiding (insert)
+
+{- Exercise 3.8 -}
+{-
+    The number of elements in the RBTree of black height $h$ is greater or equal $2^h-1$.
+    The black height of the RBTree containing $n$ elements is less or equal $log(n+1)$.
+    Maximum node height in the RBTree of black height $h$ is less or equal $2h$.
+    Maximum node height in the RBTree containing $n$ elements is less or equal $2 log(n+1)$.
+-}
+
+data Color = R | B deriving Show
+data RBTree a = Empty | Node {c :: Color, l :: RBTree a, x :: a, r :: RBTree a} deriving Show
+
+member _ Empty = False
+member v (Node _ l x r)
+    | v < x     = member v l
+    | v > x     = member v r
+    | otherwise = True
+
+balance B (Node R (Node R n0 x1 n1) x2 n2) x3 n3 = balance' n0 x1 n1 x2 n2 x3 n3
+balance B (Node R n0 x1 (Node R n1 x2 n2)) x3 n3 = balance' n0 x1 n1 x2 n2 x3 n3
+balance B n0 x1 (Node R (Node R n1 x2 n2) x3 n3) = balance' n0 x1 n1 x2 n2 x3 n3
+balance B n0 x1 (Node R n1 x2 (Node R n2 x3 n3)) = balance' n0 x1 n1 x2 n2 x3 n3
+balance c l x r = Node c l x r
+balance' n0 x1 n1 x2 n2 x3 n3 = Node R (Node B n0 x1 n1) x2 (Node B n2 x3 n3)
+
+leaf v = Node R Empty v Empty
+color c (Node _ l x r) = Node c l x r
+
+insert n v = color B  $ insert' n where
+    insert' Empty = leaf v
+    insert' n@(Node c l x r)
+        | v < x = balance c (insert' l) x r
+        | v > x = balance c l x (insert' r)
+        | otherwise = n
+
+{- Exercise 2.2 -}
+insertShort n v = color B $ insert' n Nothing where
+    insert' Empty cand
+        | (Just v) == cand  = Empty
+        | otherwise         = leaf v
+    insert' n@(Node c l x r) cand
+        | v < x     = balance c (insert' l cand) x r
+        | otherwise = balance c l x (insert' r (Just x))
+
+
+{- Excercise 3.9 -}
+fromOrdList xs = let (t, _, _) = build xs (length xs) in t where
+    build xs 0 = (Empty, 1, xs)
+    build (x:xs) 1 = (Node B Empty x Empty, 2, xs)
+    {- Size of the red-rooted subtree grows as $2^(2n)$, so no red node has red child -}
+    build xs n = (Node B (if lh > rh then color R l else l) x r, rh + 1, xs'') where
+        (l, lh, (x:xs')) = build xs mid
+        (r, rh, xs'') = build xs' (n - mid - 1)
+        mid = n `div` 2
+
+
+{- Excercise 3.10 -}
+insertFaster n v = color B $ insert' n where
+    insert' Empty = leaf v
+    insert' n@(Node c l x r)
+        | v < x = balancel c (insert' l) x r
+        | v > x = balancer c l x (insert' r)
+        | otherwise = n
+
+balancel B (Node R (Node R n0 x1 n1) x2 n2) x3 n3 = balance' n0 x1 n1 x2 n2 x3 n3
+balancel B (Node R n0 x1 (Node R n1 x2 n2)) x3 n3 = balance' n0 x1 n1 x2 n2 x3 n3
+balancel c l x r = Node c l x r
+
+balancer B n0 x1 (Node R (Node R n1 x2 n2) x3 n3) = balance' n0 x1 n1 x2 n2 x3 n3
+balancer B n0 x1 (Node R n1 x2 (Node R n2 x3 n3)) = balance' n0 x1 n1 x2 n2 x3 n3
+balancer c l x r = Node c l x r
+
+insertFastest n v = color B $ fst $ insert' n where
+    insert' Empty = (leaf v, (nobalance, nobalance))
+    insert' n@(Node c l x r)
+        | v < x = let (t, b) = insert' l in ((fst b) c t x r, (balancell, balancerl))
+        | v > x = let (t, b) = insert' r in ((snd b) c l x t, (balancelr, balancerr))
+        | otherwise = (n, (nobalance, nobalance))
+
+    balancell B (Node R (Node R n0 x1 n1) x2 n2) x3 n3 = balance' n0 x1 n1 x2 n2 x3 n3
+    balancell c l x r = Node c l x r
+
+    balancelr B (Node R n0 x1 (Node R n1 x2 n2)) x3 n3 = balance' n0 x1 n1 x2 n2 x3 n3
+    balancelr c l x r = Node c l x r
+
+    balancerl B n0 x1 (Node R (Node R n1 x2 n2) x3 n3) = balance' n0 x1 n1 x2 n2 x3 n3
+    balancerl c l x r = Node c l x r
+
+    balancerr B n0 x1 (Node R n1 x2 (Node R n2 x3 n3)) = balance' n0 x1 n1 x2 n2 x3 n3
+    balancerr c l x r = Node c l x r
+
+    nobalance c l x r = Node c l x r
