@@ -24,16 +24,14 @@ instance Arbitrary Action where
     arbitrary = elements [Insert .. DeleteMin]
 
 action :: (Heap h) => (Action, Int) -> (h Int, [Int]) -> (h Int, [Int])
-action (Insert, x)    (h, l )
-    | x `elem` l = (h, l) 
-    | otherwise  = (insert h x, insert l x)
+action (Insert, x)    (h, l ) = (insert h x, insert l x)
 action (FindMin, _)   (h, []) = (h, [])
 action (FindMin, _)   (h, l ) = assert "FindMin" (findMin h == findMin l) (h, l)
 action (DeleteMin, _) (h, []) = (h, [])
 action (DeleteMin, _) (h, l ) = (snd $ deleteMin h, snd $ deleteMin l)
 
 propertiesFor :: (Heap h) => ([Int] -> h Int) -> [Test] 
-propertiesFor fl' = [
+propertiesFor fl = [
     testProperty "fromList_toList" $ t_fromList_toList
   , testProperty "isEmpty"  $ t_isEmpty
   , testProperty "insert"   $ t_insert
@@ -43,10 +41,9 @@ propertiesFor fl' = [
   , testProperty "random"   $ t_random
   ] where
     ll :: [Int] -> [Int] 
-    ll = fromList . L.nub 
-    fl = fl' . L.nub
+    ll = fromList 
 
-    cmp xs ys = (L.sort (toList xs) == L.sort (toList ys)) && (isEmpty xs || findMin xs == findMin ys)
+    cmp h l = L.sort (toList h) == l
 
     t_fromList_toList :: [Int] -> Bool
     t_fromList_toList xs = cmp h l where
@@ -58,9 +55,9 @@ propertiesFor fl' = [
         h = isEmpty $ fl xs
         l = isEmpty $ ll xs
 
-    t_insert x xs = x `elem` xs || cmp h l where
+    t_insert x xs = cmp h l where
         h = insert (fl xs) x
-        l = insert (fromList xs :: [Int]) x
+        l = insert (ll xs) x
 
     t_findMin (NonEmpty xs) = h == l where
         h = findMin $ fl xs
@@ -83,10 +80,10 @@ instance Heap [] where
     empty = []
     isEmpty = null
     singleton x = [x]
-    insert xs x = if x `elem` xs then xs else L.insert x xs
+    insert xs x = L.insert x xs
     findMin = head
     deleteMin xs = (head xs, tail xs)
-    merge xs ys = L.sort $ L.nub $ xs ++ ys
-    fromList = L.sort . L.nub
+    merge xs ys = L.sort $ xs ++ ys
+    fromList = L.sort
     toList = id
 
