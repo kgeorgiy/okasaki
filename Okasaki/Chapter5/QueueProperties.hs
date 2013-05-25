@@ -1,10 +1,8 @@
 module Okasaki.Chapter5.QueueProperties where
 
 import Okasaki.Chapter5.Queue
+import Okasaki.Test
 
-import Test.Framework
-import Test.Framework.Providers.QuickCheck2
-import Test.QuickCheck
 import qualified Data.List as L
 
 properties :: [Test]

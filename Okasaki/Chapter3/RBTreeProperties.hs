@@ -2,12 +2,9 @@
 
 import Okasaki.Chapter2.Set
 import Okasaki.Chapter3.RBTree
-
 import Okasaki.Chapter2.TreeProperties(propertiesFor)
+import Okasaki.Test
 
-import Test.Framework
-import Test.Framework.Providers.QuickCheck2
-import Test.QuickCheck
 import qualified Data.List as L
 
 properties = [

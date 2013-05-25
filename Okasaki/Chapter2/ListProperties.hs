@@ -1,7 +1,8 @@
 ﻿module Okasaki.Chapter2.ListProperties(properties) where
 
 import Okasaki.Chapter2.List
-import Test.Framework.Providers.QuickCheck2(testProperty)
+import Okasaki.Test
+
 import Data.List(tails)
 
 properties = [

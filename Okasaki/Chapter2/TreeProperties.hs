@@ -2,11 +2,18 @@
 
 import Okasaki.Chapter2.Set
 import Okasaki.Chapter2.Tree
+import Okasaki.Test
 
-import Test.Framework
-import Test.Framework.Providers.QuickCheck2
-import Test.QuickCheck
 import qualified Data.List as L
+
+data Action = Insert | Member deriving (Enum, Show)
+instance Arbitrary Action where
+    arbitrary = elements [Insert .. Member]
+
+action :: (IOSet s) => (Action, Int) -> (s Int, [Int]) -> (s Int, [Int])
+action (Insert, x) (s, l) = (insert x s, insert x l)
+action (Member, x) (s, l) = assert "Member" (member x s == member x l) (s, l)
+
 
 properties = [
     testGroup "Tree" $ propertiesFor (fromList :: [Int] -> Tree                 Int)
@@ -25,14 +32,17 @@ propertiesFor fl = [
   , testProperty "size"    $ t_size
   , testProperty "member"  $ t_member
   , testProperty "insert"  $ t_insert
+  , testProperty "random"  $ t_random
   ] where
     ll :: [Int] -> [Int] 
     ll = fromList
 
+    cmp t l = toList t == toList l
+
     t_fromList_toList :: [Int] -> Bool
-    t_fromList_toList xs = t == l where
-        t = toList $ fl xs
-        l = toList $ ll xs
+    t_fromList_toList xs = cmp t l where
+        t = fl xs
+        l = ll xs
 
     t_isEmpty :: [Int] -> Bool
     t_isEmpty xs = t == l where
@@ -47,9 +57,13 @@ propertiesFor fl = [
         t = member x $ fl xs
         l = member x $ ll xs
 
-    t_insert x xs = t == l where
-        t = toList $ insert x $ fl xs
-        l = toList $ insert x $ ll xs
+    t_insert x xs = cmp t l where
+        t = insert x $ fl xs
+        l = insert x $ ll xs
+
+    t_random xs = t_rand action (uncurry cmp) (t, l) where
+        t = fl xs
+        l = ll xs
 
 instance ROSet [] where
     empty = []
