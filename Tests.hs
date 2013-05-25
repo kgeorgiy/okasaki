@@ -7,6 +7,8 @@ import Okasaki.Chapter2.ListProperties as C2List(properties)
 import Okasaki.Chapter2.TreeProperties as C2Tree(properties)
 import Okasaki.Chapter3.HeapProperties as C3Heap(properties)
 import Okasaki.Chapter3.RBTreeProperties as C3RBTree(properties)
+import Okasaki.Chapter5.QueueProperties as C5Queue(properties)
+import Okasaki.Chapter5.DequeProperties as C5Deque(properties)
 
 main :: IO ()
 main = defaultMain [
@@ -17,5 +19,9 @@ main = defaultMain [
   , testGroup "Chapter3" [
         testGroup "Heap" C3Heap.properties
       , testGroup "RBTree" C3RBTree.properties
+    ]
+  , testGroup "Chapter5" [
+        testGroup "Queue" C5Queue.properties
+      , testGroup "Deque" C5Deque.properties
     ]
   ]

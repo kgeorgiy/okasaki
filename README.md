@@ -18,3 +18,7 @@
         * [Exercise 3.7](Okasaki/Chapter3/ExplicitMinHeap.hs)
     * 3.3 Red-Black Trees
         * [Exercises 3.8-3.10](Okasaki/Chapter3/RBTree.hs)
+* 5 Fundamentals of Amortization
+    * 5.2 Queues
+        * [Queue](Okasaki/Chapter5/RBTree.hs)
+        * [Exercise 5.1](Okasaki/Chapter5/Deque.hs)
