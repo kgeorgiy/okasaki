@@ -2,7 +2,7 @@
 
 * 2 Persistence
     * 2.1 Lists
-        * [Exercise 2.1](Okasaki/Chapter2/List.hs)
+        * [Exercise 2.1](Okasaki/Chapter2/List.hs) [Idris](Okasaki/Chapter2/List.idr)
     * 2.2 Binary Search Trees
         * [Exercises 2.2-2.5](Okasaki/Chapter2/Tree.hs)
 * 3 Some Familiar Data Structures in a Functional Setting
