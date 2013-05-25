@@ -16,6 +16,8 @@ class Heap h where
     deleteMin :: Ord a => h a -> (a, h a)
     merge :: Ord a => h a -> h a -> h a
 
+    toList :: h a -> [a]
+
     {- Exercise 3.3 -}
     fromList :: (Heap h, Ord a) => [a] -> h a
     fromList [] = empty

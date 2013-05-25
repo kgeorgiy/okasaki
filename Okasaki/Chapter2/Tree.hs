@@ -1,20 +1,9 @@
 module Okasaki.Chapter2.Tree where
 
+import Okasaki.Chapter2.Set
+
 import Data.Maybe
 import Data.Functor(fmap)
-
-class ROSet s where
-    empty :: s a
-    isEmpty :: s a -> Bool 
-    size :: s a -> Int
-    member :: Ord a => s a -> a -> Bool
-    toList :: s a -> [a]
-
-class ROSet s => IOSet s where
-    insert :: Ord a => s a -> a -> s a
-
-    fromList :: Ord a => [a] -> s a
-    fromList = foldl insert empty 
 
 data Tree a = Leaf | Node {l :: Tree a, x :: a, r :: Tree a} deriving Show
 
@@ -27,17 +16,16 @@ instance ROSet Tree where
     size Leaf = 0
     size (Node l _ r) = size l + 1 + size r
 
-    member Leaf _ = False
-    member (Node l x r) v
-        | v < x = member l v
-        | v > x = member r v
+    member _ Leaf = False
+    member v (Node l x r)
+        | v < x     = member v l
+        | v > x     = member v r
         | otherwise = True
-
     toList Leaf = []
     toList (Node l x r) = toList l ++ x : toList r
 
 instance IOSet Tree where
-    insert n v = insert' n where
+    insert v n = insert' n where
         insert' Leaf = leaf v
         insert' n@(Node l x r)
             | v < x = setL n $ insert' l
@@ -54,10 +42,10 @@ instance ROSet TreeShortInsert where
     empty = TSI empty
     isEmpty (TSI t) = isEmpty t
     size (TSI t) = size t
-    member (TSI t) = member t
+    member v (TSI t) = member v t
     toList (TSI t) = toList t
 instance IOSet TreeShortInsert where
-    insert (TSI n) v = TSI $ insert' n Nothing where
+    insert v (TSI n) = TSI $ insert' n Nothing where
         insert' Leaf c
             | (Just v) == c = Leaf
             | otherwise     = leaf v
@@ -71,10 +59,10 @@ instance ROSet TreeCutInsert where
     empty = TCI empty
     isEmpty (TCI t) = isEmpty t
     size (TCI t) = size t
-    member (TCI t) = member t
+    member v (TCI t) = member v t
     toList (TCI t) = toList t
 instance IOSet TreeCutInsert where
-    insert (TCI n) v = TCI $ fromMaybe n (insert' n) where
+    insert v (TCI n) = TCI $ fromMaybe n (insert' n) where
         insert' Leaf = return $ leaf v
         insert' n@(Node l x r)
             | v < x = setL n `fmap` insert' l
@@ -87,10 +75,10 @@ instance ROSet TreeShortCutInsert where
     empty = TCSI empty
     isEmpty (TCSI t) = isEmpty t
     size (TCSI t) = size t
-    member (TCSI t) = member t
+    member v (TCSI t) = member v t
     toList (TCSI t) = toList t
 instance IOSet TreeShortCutInsert where
-    insert (TCSI n) v = TCSI $ fromMaybe n (insert' n Nothing) where
+    insert v (TCSI n) = TCSI $ fromMaybe n (insert' n Nothing) where
         insert' Leaf c
             | (Just v) == c = fail "Found"
             | otherwise     = return $ leaf v

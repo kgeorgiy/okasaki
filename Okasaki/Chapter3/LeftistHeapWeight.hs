@@ -23,6 +23,9 @@ instance Heap LeftistHeapWeight where
     findMin (Node _ x _ _) = x
     deleteMin (Node _ x l r) = (x, merge l r)
 
+    toList Empty = []
+    toList (Node _ x l r) = toList l ++ x : toList r
+
     {- Exercise 3.4c -}
     merge Empty h = h
     merge h Empty = h

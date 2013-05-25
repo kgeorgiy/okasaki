@@ -4,6 +4,7 @@
     * 2.1 Lists
         * [Exercise 2.1](Okasaki/Chapter2/List.hs) [Idris](Okasaki/Chapter2/List.idr)
     * 2.2 Binary Search Trees
+        * [Set type classes](Okasaki/Chapter2/Set.hs)
         * [Exercises 2.2-2.5](Okasaki/Chapter2/Tree.hs)
 * 3 Some Familiar Data Structures in a Functional Setting
     * 3.1 Leftist Heaps
@@ -16,4 +17,4 @@
         * [Exercise 3.6](Okasaki/Chapter3/BinomialHeapOpt.hs)
         * [Exercise 3.7](Okasaki/Chapter3/ExplicitMinHeap.hs)
     * 3.3 Red-Black Trees
-        * [Exercises 3.8-3.10](Okasaki/Chapter3/BinomialHeap.hs)
+        * [Exercises 3.8-3.10](Okasaki/Chapter3/RBTree.hs)

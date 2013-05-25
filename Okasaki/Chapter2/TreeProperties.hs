@@ -1,5 +1,6 @@
 ﻿module Okasaki.Chapter2.TreeProperties where
 
+import Okasaki.Chapter2.Set
 import Okasaki.Chapter2.Tree
 
 import Test.Framework
@@ -8,10 +9,10 @@ import Test.QuickCheck
 import qualified Data.List as L
 
 properties = [
-    testGroup "Tree" $ propertiesFor (fromList :: [Int] -> Tree Int)
-  , testGroup "TSI"  $ propertiesFor (fromList :: [Int] -> TreeShortInsert Int)
-  , testGroup "TCI"  $ propertiesFor (fromList :: [Int] -> TreeCutInsert Int)
-  , testGroup "TSCI" $ propertiesFor (fromList :: [Int] -> TreeShortCutInsert Int)
+    testGroup "Tree" $ propertiesFor (fromList :: [Int] -> Tree                 Int)
+  , testGroup "TSI"  $ propertiesFor (fromList :: [Int] -> TreeShortInsert      Int)
+  , testGroup "TCI"  $ propertiesFor (fromList :: [Int] -> TreeCutInsert        Int)
+  , testGroup "TSCI" $ propertiesFor (fromList :: [Int] -> TreeShortCutInsert   Int)
   , testProperty "complete" $ t_complete
   , testProperty "create" $ t_create
   ]
@@ -30,35 +31,35 @@ propertiesFor fl = [
 
     t_fromList_toList :: [Int] -> Bool
     t_fromList_toList xs = t == l where
-        t = toList (fl xs)
-        l = toList (ll xs)
+        t = toList $ fl xs
+        l = toList $ ll xs
 
     t_isEmpty :: [Int] -> Bool
     t_isEmpty xs = t == l where
-        t = isEmpty (fl xs)
-        l = isEmpty (ll xs)
+        t = isEmpty $ fl xs
+        l = isEmpty $ ll xs
 
     t_size xs = t == l where
-        t = size (fl xs)
-        l = size (ll xs)
+        t = size $ fl xs
+        l = size $ ll xs
 
     t_member x xs = t == l where
-        t = member (fl xs) x
-        l = member (fromList xs :: [Int]) x
+        t = member x $ fl xs
+        l = member x $ ll xs
 
-    t_insert x xs = toList t == toList l where
-        t = insert (fl xs) x
-        l = insert (fromList xs :: [Int]) x
+    t_insert x xs = t == l where
+        t = toList $ insert x $ fl xs
+        l = toList $ insert x $ ll xs
 
 instance ROSet [] where
     empty = []
     isEmpty = null
     size = length
-    member = flip elem
+    member = elem
     toList = id
 
 instance IOSet [] where
-    insert xs x = if x `elem` xs then xs else L.insert x xs
+    insert x xs = if x `elem` xs then xs else L.insert x xs
 
 t_complete :: Int -> Int -> Bool
 t_complete n v = toList (complete (n `mod` 10) v) == take (2 ^ (n `mod` 10) - 1) (cycle [v])

@@ -42,4 +42,7 @@ instance Heap BinomialHeapOpt where
     deleteMin (BinomialHeapOpt ts) = (m, BinomialHeapOpt $ merge' ts' $ zip [0..] $ reverse c) where
         ((Node m c), ts') = removeMinTree ts
 
+    toList (BinomialHeapOpt ts) = concatMap (tl . snd) ts where
+        tl (Node r c) = r : concatMap tl c
+
     merge (BinomialHeapOpt ts1) (BinomialHeapOpt ts2) = BinomialHeapOpt $ merge' ts1 ts2

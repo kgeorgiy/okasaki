@@ -42,4 +42,7 @@ instance Heap BinomialHeap where
     deleteMin (BinomialHeap ts) = (m, BinomialHeap $ merge' ts' $ reverse c) where
         ((Node _ m c), ts') = removeMinTree ts
 
+    toList (BinomialHeap ts) = concatMap tl ts where
+        tl (Node _ r c) = r : concatMap tl c
+
     merge (BinomialHeap ts1) (BinomialHeap ts2) = BinomialHeap $ merge' ts1 ts2

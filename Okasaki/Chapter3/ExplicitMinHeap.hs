@@ -4,7 +4,7 @@ module Okasaki.Chapter3.ExplicitMinHeap(ExplicitMinHeap, Heap(..)) where
 
 import Okasaki.Chapter3.Heap
 
-data Heap h => ExplicitMinHeap h a = Empty | Heap a (h a) deriving Show
+data ExplicitMinHeap h a = Empty | Heap a (h a) deriving Show
 
 instance Heap h => Heap (ExplicitMinHeap h) where
     empty = Empty
@@ -15,7 +15,12 @@ instance Heap h => Heap (ExplicitMinHeap h) where
     insert (Heap m h) v = Heap (min m v) $ insert h v
 
     findMin (Heap m _) = m
-    deleteMin (Heap m h) = let h' = snd $ deleteMin h in (m, Heap (findMin h) h)
+    deleteMin (Heap m h) = let h' = snd $ deleteMin h in 
+        (m, if isEmpty h' then Empty else Heap (findMin h') h')
+
+    toList Empty = []
+    toList (Heap _ h) = toList h
+
     merge Empty h      = h
     merge h      Empty = h
     merge (Heap m1 h1) (Heap m2 h2) = Heap (min m1 m2) $ merge h1 h2

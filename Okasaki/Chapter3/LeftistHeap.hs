@@ -18,6 +18,9 @@ instance Heap LeftistHeap where
     findMin (Node _ x _ _) = x
     deleteMin (Node _ x l r) = (x, merge l r)
 
+    toList Empty = []
+    toList (Node _ x l r) = toList l ++ x : toList r
+
     merge Empty h = h
     merge h Empty = h
     merge n1@(Node _ x1 l1 r1) n2@(Node _ x2 l2 r2)
