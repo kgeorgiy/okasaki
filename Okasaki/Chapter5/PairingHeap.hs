@@ -57,7 +57,7 @@ instance Heap BinaryPairingHeap where
 
     deleteMin (BNode a c BEmpty) = (a, mergePairs c) where
         mergePairs BEmpty = BEmpty
-        mergePairs (BNode x1 c1 (BNode x2 c2 s2)) = --merge
+        mergePairs (BNode x1 c1 (BNode x2 c2 s2)) = merge
             (merge (BNode x1 c1 BEmpty) (BNode x2 c2 BEmpty))
             (mergePairs s2)
         mergePairs h = h
