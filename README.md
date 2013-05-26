@@ -22,3 +22,4 @@
     * 5.2 Queues
         * [Queue](Okasaki/Chapter5/RBTree.hs)
         * [Exercise 5.1](Okasaki/Chapter5/Deque.hs)
+        * [Exercise 5.4](Okasaki/Chapter5/SplayHeap.hs)

@@ -1,4 +1,6 @@
-﻿module Okasaki.Test(
+﻿{-# LANGUAGE ExistentialQuantification, ConstraintKinds #-}
+
+module Okasaki.Test(
     assert, 
     Arbitrary(..),
     elements,
@@ -7,7 +9,9 @@
     Test, 
     testGroup, 
     testProperty,
-    t_rand
+    t_rand,
+    B(..),
+    nonEmpty
 ) where
 
 import Test.Framework
@@ -23,3 +27,6 @@ assert message statement value =
 t_rand :: (action -> state -> state) -> (state -> Bool) -> state -> [action] -> Bool
 t_rand action check start = check . foldl go start where
         go p a = action a $ assert "check" (check p) p
+
+data B cls a = forall t. cls t => B (t a)
+nonEmpty f (NonEmpty xs) = f xs
