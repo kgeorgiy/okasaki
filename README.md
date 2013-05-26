@@ -22,4 +22,7 @@
     * 5.2 Queues
         * [Queue](Okasaki/Chapter5/RBTree.hs)
         * [Exercise 5.1](Okasaki/Chapter5/Deque.hs)
+    * 5.4 Splay Heaps
         * [Exercise 5.4](Okasaki/Chapter5/SplayHeap.hs)
+    * 5.5 Pairing Heaps
+        * [Exercise 5.8](Okasaki/Chapter5/PairingHeap.hs)

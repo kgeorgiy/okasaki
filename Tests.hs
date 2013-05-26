@@ -9,7 +9,7 @@ import Okasaki.Chapter3.HeapProperties as C3Heap(properties)
 import Okasaki.Chapter3.RBTreeProperties as C3RBTree(properties)
 import Okasaki.Chapter5.QueueProperties as C5Queue(properties)
 import Okasaki.Chapter5.DequeProperties as C5Deque(properties)
-import Okasaki.Chapter5.SplayHeapProperties as C5Splay(properties)
+import Okasaki.Chapter5.HeapProperties as C5Heap(properties)
 
 main :: IO ()
 main = defaultMain [
@@ -24,6 +24,6 @@ main = defaultMain [
   , testGroup "Chapter5" [
         testGroup "Queue" C5Queue.properties
       , testGroup "Deque" C5Deque.properties
-      , testGroup "Splay" C5Splay.properties
+      , testGroup "Heap" C5Heap.properties
     ]
   ]
