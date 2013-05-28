@@ -19,7 +19,7 @@
     * 3.3 Red-Black Trees
         * [Exercises 3.8-3.10](Okasaki/Chapter3/RBTree.hs)
 * 4 Lazy Evaluation
-    * 4.2 Sreams
+    * 4.2 Streams
         * [Exercise 4.2](Okasaki/Chapter4/InsertionSort.hs)
 * 5 Fundamentals of Amortization
     * 5.2 Queues
