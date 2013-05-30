@@ -5,7 +5,7 @@ import Okasaki.Chapter2.Set
 import Data.Maybe
 import Data.Functor(fmap)
 
-data Tree a = Leaf | Node {l :: Tree a, x :: a, r :: Tree a} deriving Show
+data Tree a = Leaf | Node {l :: !(Tree a), x :: !a, r :: !(Tree a)} deriving Show
 
 instance ROSet Tree where
     empty = Leaf

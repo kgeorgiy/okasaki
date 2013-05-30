@@ -11,8 +11,9 @@ import Okasaki.Test
 properties :: [Test]
 properties = [
     testGroup "List" [
-        testProperty "t_suffixes"  $ t_suffixes suffixes
-      , testProperty "t_suffixes'" $ t_suffixes suffixes'
+        testProperty "t_suffixes"  $ t_suffixes suffixes1
+      , testProperty "t_suffixes'" $ t_suffixes suffixes2
+      , testProperty "t_suffixes'" $ t_suffixes suffixes3
       ]
   , testGroup "Tree" [
         testGroup "Tree" $ TP.prop (TP.empty :: Tree                 Int)
@@ -24,8 +25,8 @@ properties = [
       ]
   ]
 
-t_suffixes :: ([Int] -> [[Int]]) -> [Int] -> Bool
-t_suffixes f xs = f xs == L.tails xs                                                   
+t_suffixes :: (List Int -> List (List Int)) -> [Int] -> Bool
+t_suffixes f xs = (fromL $ mapL fromL $ f $ toL xs) == L.tails xs
 
 t_complete :: Int -> Int -> Bool
 t_complete n v = toList (complete (n `mod` 10) v) == take (2 ^ (n `mod` 10) - 1) (cycle [v])

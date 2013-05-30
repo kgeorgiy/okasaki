@@ -10,16 +10,16 @@ import qualified Data.List as L
 import System.IO
 
 randomList :: Int -> IO [Int]
-randomList n = do
-    xs <- newStdGen >>= evaluate . take n . L.unfoldr (Just . random)
-    evaluate $ sum xs
-    return xs
+randomList n = newStdGen >>= forceList . take n . L.unfoldr (Just . random)
+
+forceList :: [Int] -> IO [Int]
+forceList xs = evaluate (sum xs) >> return xs
     
 time f args = do
-    evaluate f
-    evaluate args
+    f' <- evaluate f
+    args' <- evaluate args
     t <- getCPUTime
-    evaluate $ f args
+    evaluate $ f' args'
     t' <- getCPUTime
     return (t' - t)
 
@@ -54,6 +54,6 @@ showV :: [Double] -> String
 showV = L.intercalate ", " . map (printf "%0.3f")
 
 printV :: String -> [String] -> [Double] -> IO ()
-printV name ns vs = putStrLn $ name ++ " " ++ L.intercalate " + " (map (uncurry $ printf "%0.3f %s") $ filter ((limit <) . fst) $ zip vs ns) where
-    limit = maximum vs / 2
+printV name ns vs = putStrLn $ name ++ " " ++ L.intercalate " + " (map (\(v, n) -> printf {-%0.3f-}"%s" n) $ filter ((limit <) . fst) $ zip vs ns) where
+    limit = maximum vs / 3
 

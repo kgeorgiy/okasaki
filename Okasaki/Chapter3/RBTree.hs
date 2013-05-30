@@ -21,7 +21,7 @@ import Data.List hiding (insert)
 -}
 
 data Color = R | B deriving Show
-data RBTree a = Empty | Node {c :: Color, l :: RBTree a, x :: a, r :: RBTree a} deriving Show
+data RBTree a = Empty | Node {c :: !Color, l :: !(RBTree a), x :: !a, r :: !(RBTree a)} deriving Show
 
 instance ROSet RBTree where
     empty = Empty

@@ -1,13 +1,22 @@
 {-# LANGUAGE TupleSections #-}
 module Main(main) where
 
+import Okasaki.Chapter2.Tree
+import qualified Okasaki.Chapter2.Set as T
+
+import Okasaki.Chapter3.BinomialHeap(BinomialHeap)
+import qualified Okasaki.Chapter3.Heap as H
+
+import Okasaki.Chapter3.RBTree
+
 import Okasaki.Chapter4.InsertionSort
 import qualified Okasaki.Chapter5.Queue as Q
 import Okasaki.Chapter6.LazyBatchedQueue(LazyBatchedQueue)
 import Okasaki.Chapter6.PhysicistsQueue(PhysicistsQueue)
-import qualified Okasaki.Chapter3.Heap as H
-import Okasaki.Chapter3.BinomialHeap(BinomialHeap)
 import qualified Okasaki.Chapter6.Sortable as S
+
+import qualified Data.List as L
+import Control.Exception(evaluate)
 
 import Okasaki.Bench
 
@@ -25,6 +34,20 @@ factorsN n' = let n = fromIntegral n' in (
     ["1", "log n", "n", "n log n", "n^2"]
   , [ 1,   log n,   n,   n*log n ,  n*n ]
   )
+
+treeInsertRandomExperiment :: (T.IOSet t) => String -> t Int -> IO ()
+treeInsertRandomExperiment name w = experiment ("Tree.insert random " ++ name) prepare (run w) factorsN inputs where
+    prepare n = randomList n
+    run :: (T.IOSet t) => t Int -> Int -> [Int] -> t Int
+    run _ _ = foldr T.insert T.empty
+    inputs = powers 30000 1.05 100000
+
+treeInsertSortedExperiment :: (T.IOSet t) => String -> t Int -> IO ()
+treeInsertSortedExperiment name w = experiment ("Tree.insert sorted " ++ name) prepare (run w) factorsN inputs where
+    prepare n = randomList n >>= forceList . L.sort
+    run :: (T.IOSet t) => t Int -> Int -> [Int] -> t Int
+    run _ _ = foldr T.insert T.empty
+    inputs = powers 2000 1.1 10000
 
 insertionSortExperiment = experiment "insertionSort" prepare run factorsNK inputs where
     prepare (n, _) = randomList n
@@ -57,6 +80,10 @@ sortableAddExperiment name scale w = experiment ("Sortable.add " ++ name) prepar
     inputs = map (scale *) $ powers 30000 1.05 100000
 
 main = do 
+    treeInsertRandomExperiment "Tree"   (T.empty :: Tree Int)
+    treeInsertSortedExperiment "Tree"   (T.empty :: Tree Int)
+    treeInsertRandomExperiment "RBTree" (T.empty :: RBTree Int)
+    treeInsertSortedExperiment "RBTree" (T.empty :: RBTree Int)
     insertionSortExperiment
     queueExperiment "BatchedQueue" (Q.empty :: Q.BatchedQueue Int)
     queueExperiment "LazyBatchedQueue" (Q.empty :: LazyBatchedQueue Int)
