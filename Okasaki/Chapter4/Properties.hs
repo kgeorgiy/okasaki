@@ -1,4 +1,4 @@
-module Okasaki.Chapter4.SortProperties where
+module Okasaki.Chapter4.Properties(properties) where
 
 import Okasaki.Chapter4.InsertionSort
 import Okasaki.Test

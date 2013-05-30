@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances, RankNTypes, UndecidableInstances #-}
-module Okasaki.Chapter6.SortableProperties where
+module Okasaki.Chapter6.SortableProperties(Sortable(..), TestSortable(..)) where
 
 import Okasaki.Chapter6.Sortable
 import Okasaki.Test

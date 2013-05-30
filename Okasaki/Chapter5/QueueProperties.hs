@@ -1,13 +1,8 @@
 {-# LANGUAGE FlexibleInstances, RankNTypes, UndecidableInstances #-}
-module Okasaki.Chapter5.QueueProperties where
+module Okasaki.Chapter5.QueueProperties(Queue(..), TestQueue(..)) where
 
 import Okasaki.Chapter5.Queue
 import Okasaki.Test
-
-properties :: [Test]
-properties = [
-    testGroup "BatchedQueue" $ prop (empty :: BatchedQueue Int)
-  ]
 
 instance Eq a => Eq (B Queue a) where
     (B l) == (B r) = toList l == toList r

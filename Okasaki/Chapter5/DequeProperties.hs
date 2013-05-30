@@ -1,15 +1,12 @@
 {-# LANGUAGE FlexibleInstances, RankNTypes, UndecidableInstances #-}
-module Okasaki.Chapter5.DequeProperties where
+module Okasaki.Chapter5.DequeProperties(Deque(..), TestDeque(..)) where
 
 import Okasaki.Chapter5.Deque
 import Okasaki.Chapter5.Queue
 import Okasaki.Test
 
-import qualified Okasaki.Chapter5.QueueProperties as Q
+import qualified Okasaki.Chapter5.QueueProperties as QP
 import qualified Data.List as L
-
-properties :: [Test]
-properties = [testGroup "BatchedDeque" $ prop (empty :: BatchedDeque Int)]
 
 data Action = Cons | Head | Tail | Snoc | Last | Init deriving (Enum, Show)
 instance Arbitrary Action where
@@ -41,7 +38,7 @@ class (Deque d) => TestDeque d where
         (h1, h2) = pair w xs 
 
     prop :: d Int -> [Test] 
-    prop w = Q.prop w ++ [
+    prop w = QP.prop w ++ [
         testProperty "cons"   $ \x -> v w (deque . cons x)
       , testProperty "qlast"  $ nonEmpty $ v w qlast
       , testProperty "qinit"  $ nonEmpty $ v w (deque . qtail)

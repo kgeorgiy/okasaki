@@ -1,4 +1,5 @@
-﻿module Okasaki.Chapter2.TreeProperties where
+﻿{-# LANGUAGE FlexibleInstances, RankNTypes, UndecidableInstances #-}
+module Okasaki.Chapter2.TreeProperties(ROSet(..), IOSet(..), TestTree(..)) where
 
 import Okasaki.Chapter2.Set
 import Okasaki.Chapter2.Tree
@@ -14,56 +15,31 @@ action :: (IOSet s) => (Action, Int) -> (s Int, [Int]) -> (s Int, [Int])
 action (Insert, x) (s, l) = (insert x s, insert x l)
 action (Member, x) (s, l) = assert "Member" (member x s == member x l) (s, l)
 
+instance Eq a => Eq (B IOSet a) where
+    (B l) == (B r) = toList l == toList r
 
-properties = [
-    testGroup "Tree" $ propertiesFor (fromList :: [Int] -> Tree                 Int)
-  , testGroup "TSI"  $ propertiesFor (fromList :: [Int] -> TreeShortInsert      Int)
-  , testGroup "TCI"  $ propertiesFor (fromList :: [Int] -> TreeCutInsert        Int)
-  , testGroup "TSCI" $ propertiesFor (fromList :: [Int] -> TreeShortCutInsert   Int)
-  , testProperty "complete" $ t_complete
-  , testProperty "create" $ t_create
-  ]
+tree :: IOSet t => t a -> B IOSet a
+tree = B
 
+class (IOSet t) => TestTree t where
+    pair :: t Int -> [Int] -> (t Int, [Int])
+    pair _ xs = ((fromList xs), (fromList xs)) 
 
-propertiesFor :: (IOSet s) => ([Int] -> s Int) -> [Test] 
-propertiesFor fl = [
-    testProperty "fromList_toList" $ t_fromList_toList
-  , testProperty "isEmpty" $ t_isEmpty
-  , testProperty "size"    $ t_size
-  , testProperty "member"  $ t_member
-  , testProperty "insert"  $ t_insert
-  , testProperty "random"  $ t_random
-  ] where
-    ll :: [Int] -> [Int] 
-    ll = fromList
+    v :: (Eq a) => t Int -> (forall t. (IOSet t) => t Int -> a) -> [Int] -> Bool
+    v w f xs = f h1 == f h2 where 
+        (h1, h2) = pair w xs 
 
-    cmp t l = toList t == toList l
-
-    t_fromList_toList :: [Int] -> Bool
-    t_fromList_toList xs = cmp t l where
-        t = fl xs
-        l = ll xs
-
-    t_isEmpty :: [Int] -> Bool
-    t_isEmpty xs = t == l where
-        t = isEmpty $ fl xs
-        l = isEmpty $ ll xs
-
-    t_size xs = t == l where
-        t = size $ fl xs
-        l = size $ ll xs
-
-    t_member x xs = t == l where
-        t = member x $ fl xs
-        l = member x $ ll xs
-
-    t_insert x xs = cmp t l where
-        t = insert x $ fl xs
-        l = insert x $ ll xs
-
-    t_random xs = t_rand action (uncurry cmp) (t, l) where
-        t = fl xs
-        l = ll xs
+    prop :: t Int -> [Test] 
+    prop w = [
+        testProperty "fromList_toList" $ v w tree
+      , testProperty "isEmpty"  $ v w isEmpty
+      , testProperty "size"     $ v w size
+      , testProperty "member"   $ \x -> v w (member x)
+      , testProperty "insert"   $ \x -> v w (tree . (insert x))
+      , testProperty "random"   $ t_random
+      ] where
+        t_random = t_rand action (\(l, r) -> tree l == tree r) . pair w
+instance IOSet t => TestTree t where
 
 instance ROSet [] where
     empty = []
@@ -74,10 +50,3 @@ instance ROSet [] where
 
 instance IOSet [] where
     insert x xs = if x `elem` xs then xs else L.insert x xs
-
-t_complete :: Int -> Int -> Bool
-t_complete n v = toList (complete (n `mod` 10) v) == take (2 ^ (n `mod` 10) - 1) (cycle [v])
-
-
-t_create :: Int -> Int -> Bool
-t_create n v = toList (create (n `mod` 1000) v) == take (n `mod` 1000) (cycle [v])

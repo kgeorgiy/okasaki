@@ -1,26 +1,11 @@
-{-# LANGUAGE RankNTypes, FlexibleInstances, UndecidableInstances, MultiParamTypeClasses, ConstraintKinds #-}
-module Okasaki.Chapter3.HeapProperties where
+{-# LANGUAGE FlexibleInstances, RankNTypes, UndecidableInstances #-}
+module Okasaki.Chapter3.HeapProperties(Heap(..), TestHeap(..)) where
 
 import Okasaki.Chapter3.Heap
-import Okasaki.Chapter3.LeftistHeap
-import Okasaki.Chapter3.LeftistHeapWeight
-import Okasaki.Chapter3.BinomialHeap
-import Okasaki.Chapter3.BinomialHeapOpt
-import Okasaki.Chapter3.ExplicitMinHeap
 import Okasaki.Test
 
 import qualified Data.List as L
 import Control.Arrow(second)
-
-properties :: [Test]
-properties = [
-    testGroup "LeftistHeap"         $ prop (empty :: LeftistHeap       Int)
-  , testGroup "LeftistHeapWeight"   $ prop (empty :: LeftistHeapWeight Int)
-  , testGroup "BinomialHeap"        $ prop (empty :: BinomialHeap      Int)
-  , testGroup "BinomialHeapOpt"     $ prop (empty :: BinomialHeapOpt   Int)
-  , testGroup "ExplicitMinHeap"     $ prop (empty :: ExplicitMinHeap LeftistHeap Int)
-  ]
-
 
 data Action = Insert | FindMin | DeleteMin deriving (Enum, Show)
 instance Arbitrary Action where
@@ -40,21 +25,21 @@ heap :: Heap h => h a -> B Heap a
 heap = B
 
 class (Heap h) => TestHeap h where
-    pairH :: h Int -> [Int] -> (h Int, [Int])
-    pairH _ xs = ((fromList xs), (fromList xs)) 
+    pair :: h Int -> [Int] -> (h Int, [Int])
+    pair _ xs = ((fromList xs), (fromList xs)) 
 
     v :: (Eq a) => h Int -> (forall h. (Heap h) => h Int -> a) -> [Int] -> Bool
     v w f xs = f h1 == f h2 where 
-        (h1, h2) = pairH w xs 
+        (h1, h2) = pair w xs 
 
     v2 :: (Eq a) => h Int -> (forall h. (Heap h) => h Int -> h Int -> a) -> [Int] -> [Int] -> Bool
     v2 w f xs ys = f x1 y1 == f x2 y2 where 
-        (x1, x2) = pairH w xs 
-        (y1, y2) = pairH w ys 
+        (x1, x2) = pair w xs 
+        (y1, y2) = pair w ys 
 
     prop :: h Int -> [Test] 
     prop w = [
-        testProperty "fromList_toList" $ v w (heap . id)
+        testProperty "fromList_toList" $ v w heap
       , testProperty "isEmpty"  $ v w isEmpty
       , testProperty "insert"   $ \x -> v w (heap . (`insert` x))
       , testProperty "findMin"  $ nonEmpty (v w findMin)
@@ -62,7 +47,7 @@ class (Heap h) => TestHeap h where
       , testProperty "merge"    $ v2 w ((heap .) . merge)
       , testProperty "random"   $ t_random
       ] where
-        t_random = t_rand action (\(l, r) -> heap l == heap r) . pairH w
+        t_random = t_rand action (\(l, r) -> heap l == heap r) . pair w
 
 instance Heap h => TestHeap h where
     
