@@ -29,3 +29,11 @@
         * [Exercise 5.4](Okasaki/Chapter5/SplayHeap.hs)
     * 5.5 Pairing Heaps
         * [Exercise 5.8](Okasaki/Chapter5/PairingHeap.hs)
+* 6 Amortization and Persistence via Lazy Evaluation
+    * 6.3 The Banker's Method
+        * [LazyBatchedQueue](Okasaki/Chapter6/LazyBatchedQueue.hs)
+    * 6.4 The Physicist's Method
+        * [PhysicistsQueue](Okasaki/Chapter6/PhysicistsQueue.hs)
+        * [Sortable](Okasaki/Chapter6/Sortable.hs)
+    * 6.5 Lazy Pairing Heaps
+        * [LazyPairingHeap](Okasaki/Chapter6/LazyPairingHeap.hs)

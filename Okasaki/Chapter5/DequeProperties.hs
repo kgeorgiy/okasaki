@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances, RankNTypes, UndecidableInstances #-}
 module Okasaki.Chapter5.DequeProperties where
 
 import Okasaki.Chapter5.Deque
@@ -8,9 +9,7 @@ import qualified Okasaki.Chapter5.QueueProperties as Q
 import qualified Data.List as L
 
 properties :: [Test]
-properties = [
-    testGroup "BatchedDeque"         $ propertiesFor (empty :: BatchedDeque Int)
-  ]
+properties = [testGroup "BatchedDeque" $ prop (empty :: BatchedDeque Int)]
 
 data Action = Cons | Head | Tail | Snoc | Last | Init deriving (Enum, Show)
 instance Arbitrary Action where
@@ -28,32 +27,29 @@ action (Last, _) (d, l ) = assert "Last" (qlast d == qlast l) (d, l)
 action (Init, _) (d, []) = (d, [])
 action (Init, _) (d, l ) = (qinit d, qinit l)
 
-propertiesFor :: (Deque d) => (d Int) -> [Test] 
-propertiesFor dempty = Q.propertiesFor dempty ++ [
-    testProperty "cons"     $ t_cons
-  , testProperty "dlast"    $ t_qlast
-  , testProperty "dinit"    $ t_qinit
-  , testProperty "random"   $ t_random
-  ] where
-    lempty = []
-    cmp qx qy = Q.getAll qx == Q.getAll qy
+instance Eq a => Eq (B Deque a) where
+    (B l) == (B r) = toList l == toList r
+deque :: Deque d => d a -> B Deque a
+deque = B
 
-    t_cons x xs = cmp d l where
-        d = cons x $ Q.addAll dempty xs
-        l = cons x $ Q.addAll lempty xs
+class (Deque d) => TestDeque d where
+    pair :: d Int -> [Int] -> (d Int, [Int])
+    pair _ xs = ((fromList xs), (fromList xs)) 
 
-    t_qlast (NonEmpty xs) = d == l where
-        d = qlast $ Q.addAll dempty xs
-        l = qlast $ Q.addAll lempty xs
+    v :: (Eq a) => d Int -> (forall d. (Deque d) => d Int -> a) -> [Int] -> Bool
+    v w f xs = f h1 == f h2 where 
+        (h1, h2) = pair w xs 
 
-    t_qinit (NonEmpty xs) = cmp d l where
-        d = qinit $ Q.addAll dempty xs
-        l = qinit $ Q.addAll lempty xs
+    prop :: d Int -> [Test] 
+    prop w = Q.prop w ++ [
+        testProperty "cons"   $ \x -> v w (deque . cons x)
+      , testProperty "qlast"  $ nonEmpty $ v w qlast
+      , testProperty "qinit"  $ nonEmpty $ v w (deque . qtail)
+      , testProperty "random" $ t_random
+      ] where
+        t_random = t_rand action (\(l, r) -> deque l == deque r) . pair w
 
-    t_random xs = t_rand action (uncurry cmp) (d, l) where
-        d = Q.addAll dempty xs
-        l = Q.addAll lempty xs
-
+instance Deque d => TestDeque d where
 
 instance Deque [] where
     cons = (:)

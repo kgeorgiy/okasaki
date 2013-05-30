@@ -1,37 +1,36 @@
+{-# LANGUAGE FlexibleInstances, RankNTypes, UndecidableInstances #-}
 module Okasaki.Chapter5.QueueProperties where
 
 import Okasaki.Chapter5.Queue
 import Okasaki.Test
 
-import qualified Data.List as L
-
 properties :: [Test]
 properties = [
-    testGroup "BatchedQueue"         $ propertiesFor (empty :: BatchedQueue Int)
+    testGroup "BatchedQueue" $ prop (empty :: BatchedQueue Int)
   ]
 
-getAll :: (Queue q) => q a -> [a]
-getAll q = snd $ head $ dropWhile (not . isEmpty . fst) $
-    iterate (\(q, r) -> (qtail q, qhead q : r)) (q, [])
+instance Eq a => Eq (B Queue a) where
+    (B l) == (B r) = toList l == toList r
+queue :: Queue q => q a -> B Queue a
+queue = B
 
-addAll :: (Queue q) => q a -> [a] -> q a
-addAll q xs = foldr snoc q xs
+class (Queue q) => TestQueue q where
+    pair :: q Int -> [Int] -> (q Int, [Int])
+    pair _ xs = ((fromList xs), (fromList xs)) 
 
-propertiesFor :: (Queue q) => (q Int) -> [Test] 
-propertiesFor qempty = [
-    testProperty "getAdd" $ t_getAdd
-  , testProperty "snoc"     $ t_snoc
-  ] where
-    lempty = []
-    cmp qx qy = getAll qx == getAll qy
+    v :: (Eq a) => q Int -> (forall q. (Queue q) => q Int -> a) -> [Int] -> Bool
+    v w f xs = f h1 == f h2 where 
+        (h1, h2) = pair w xs 
 
-    t_getAdd xs = cmp q l where
-        q = addAll qempty xs
-        l = addAll lempty xs
-
-    t_snoc x xs = cmp q l where
-        q = snoc x $ addAll qempty xs
-        l = snoc x $ addAll lempty xs
+    prop :: q Int -> [Test] 
+    prop w = [
+        testProperty "fromList_toList"  $ v w queue
+      , testProperty "isEmpty"          $ v w isEmpty
+      , testProperty "snoc"             $ \x -> v w (queue . snoc x)
+      , testProperty "qhead"            $ nonEmpty $ v w qhead
+      , testProperty "qtail"            $ nonEmpty $ v w (queue . qtail)
+      ] where
+instance Queue q => TestQueue q where
 
 instance Queue [] where
     empty = []

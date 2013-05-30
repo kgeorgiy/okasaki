@@ -1,5 +1,7 @@
 module Okasaki.Chapter3.RBTree(
-    RBTree
+    RBTree(..)
+  , ROSet(..)
+  , IOSet(..)
   , RBTreeShortInsert
   , RBTreeFaster
   , RBTreeFastest
