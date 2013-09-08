@@ -27,16 +27,21 @@ class KnuthCounter(val radix: Int)  {
   }
 
   private def fix(index: Int) {
-    if (Math.abs(digit(index)) == radix) {
-      updateDigit(index + 1, if (digit(index) > 0) 1 else -1)
+    if (digit(index) == radix) {
+      updateDigit(index + 1, 1)
       set(index, 0)
+    }
+    if (digit(index) == -1) {
+      updateDigit(index + 1, -1)
+      set(index, radix - 1)
     }
   }
 
   private def updateDigit(index: Int, delta: Int) {
+    val yellow = if (delta > 0) radix else -1
     set(index, digit(index) + delta)
-    if (digit(index) == delta * (radix - 1)) {
-      pointers(index) = if (digit(index + 1) == delta * radix) index + 1 else pointer(index + 1)
+    if (digit(index) == yellow - delta) {
+      pointers(index) = if (digit(index + 1) == yellow) index + 1 else pointer(index + 1)
     }
   }
 
