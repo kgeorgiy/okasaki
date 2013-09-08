@@ -9,30 +9,34 @@ class KnuthCounter(val radix: Int)  {
   def value = digits.foldLeft((BigInt(0), BigInt(1)))((sp, digit) => (sp._1 + digit * sp._2, sp._2 * radix))._1
 
   def inc(index: Int) {
-    fix(index)
-    fix(pointer(index))
-    incDigit(index - 1)
-//    set(index, digit(index) + 1)
-    fix(index)
-    fix(pointer(index))
-//    println(index + " " + digits + " " + pointers + " " + value)
+    update(index, 1)
   }
 
+  def dec(index: Int) {
+    update(index, -1)
+  }
 
-  def fix(index: Int) {
-    if (digit(index) == radix) {
-      incDigit(index)
+  private def update(index: Int, delta: Int) {
+    fix(index)
+    fix(pointer(index))
+    updateDigit(index, delta)
+    //    set(index, digit(index) + 1)
+    fix(index)
+    fix(pointer(index))
+    //    println(index + " " + digits + " " + pointers + " " + value)
+  }
+
+  private def fix(index: Int) {
+    if (Math.abs(digit(index)) == radix) {
+      updateDigit(index + 1, if (digit(index) > 0) 1 else -1)
       set(index, 0)
     }
   }
 
-
-  def incDigit(index: Int) {
-    set(index + 1, digit(index + 1) + 1)
-    if (digit(index + 1) == radix - 1) {
-      pointers(index + 1) = if (digit(index + 2) == radix) index + 2 else pointer(index + 2)
-    } else {
-//      pointers(index + 1) = pointer(index + 2)
+  private def updateDigit(index: Int, delta: Int) {
+    set(index, digit(index) + delta)
+    if (digit(index) == delta * (radix - 1)) {
+      pointers(index) = if (digit(index + 1) == delta * radix) index + 1 else pointer(index + 1)
     }
   }
 
@@ -41,7 +45,8 @@ class KnuthCounter(val radix: Int)  {
       digits += 0
       pointers += 0
     }
-    digits(index) = digit.ensuring(0 <= _).ensuring(_ <= radix)
+    assert(-radix <= digit && digit <= radix, "digit=" + digit)
+    digits(index) = digit
   }
 
   private def digit(index: Int) = {
