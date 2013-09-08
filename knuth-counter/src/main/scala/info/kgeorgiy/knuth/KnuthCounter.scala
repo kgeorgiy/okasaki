@@ -17,13 +17,9 @@ class KnuthCounter(val radix: Int)  {
   }
 
   private def update(index: Int, delta: Int) {
-    fix(index)
     fix(pointer(index))
     updateDigit(index, delta)
-    //    set(index, digit(index) + 1)
-    fix(index)
     fix(pointer(index))
-    //    println(index + " " + digits + " " + pointers + " " + value)
   }
 
   private def fix(index: Int) {
@@ -38,11 +34,9 @@ class KnuthCounter(val radix: Int)  {
   }
 
   private def updateDigit(index: Int, delta: Int) {
-    val yellow = if (delta > 0) radix else -1
     set(index, digit(index) + delta)
-    if (digit(index) == yellow - delta) {
-      pointers(index) = if (digit(index + 1) == yellow) index + 1 else pointer(index + 1)
-    }
+    val red = if (delta > 0) radix else -1
+    pointers(index) = if (digit(index) == red) index else pointer(index + 1)
   }
 
   private def set(index: Int, digit: Int) {
